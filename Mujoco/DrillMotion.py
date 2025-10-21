@@ -49,9 +49,9 @@ class DrillMotionCtrl:
     self.kp = 150
     self.kd = 10.0 
     self.init_qpos = d.qpos.copy()
-    self.drill_displacement = 0.05
+    self.drill_displacement = 0.02
     self.hole_center = np.array([0.55, 0, 0.85])  # Example desired position 
-    self.r_freq = 1.0
+    self.r_freq = 0.5
     self.pitch = -np.pi/5
     self.prep_time = 1.5
     # self.pitch = 0
@@ -60,10 +60,12 @@ class DrillMotionCtrl:
   
   def update(self):
     target_position = self.hole_center
-
-    local_ori_change = np.array([np.cos(np.pi*self.r_freq*self.d.time/2), np.sin(np.pi*self.r_freq*self.d.time/2), 0, 0])
+    th = 2*np.pi*self.r_freq*self.d.time
+    local_ori_change = np.array([np.cos(th/2), np.sin(th/2), 0, 0])
+    print("local_ori_change: " + str(local_ori_change))
     target_ori = quat_multiply(self.drill_ori, local_ori_change) 
-    target_ori_mtx = quat2SO3(self.drill_ori) @ quat2SO3(local_ori_change)
+    # target_ori_mtx = quat2SO3(self.drill_ori) @ quat2SO3(local_ori_change)
+    target_ori_mtx = quat2SO3(self.drill_ori)
     target_position += target_ori_mtx @ np.array([0.02*self.drill_displacement*np.sin(self.d.time), 0, 0])
     # target_ori = quat_multiply(local_ori_change, self.drill_ori) 
     # get EE position
