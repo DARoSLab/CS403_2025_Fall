@@ -39,12 +39,12 @@
       <geom type="mesh" contype="0"  conaffinity="0" density="0" mesh="arm_base" />
 
       <body name="colum_link" pos="-0.06 0 0">
-        <joint name="base_yaw" type="hinge" axis="0 0 1" pos="0 0 0" armature="0.005"/>
+        <joint name="base_yaw" type="hinge" axis="0 0 1" pos="0 0 0" armature="0.005" damping="2.0" frictionloss="0.2"/>
         <inertial pos="0.0 0 0.2" quat="1 0 0 0" mass="2.5" diaginertia="0.00176331 0.00174734 0.000400822"/>
         <geom type="mesh" contype="0"  conaffinity="0" density="0" mesh="column_link" material="orange_material"/>
 
         <body name="shoulder_pitch" pos="0 0 0.4">
-          <joint name="shoulder_pitch" type="hinge" axis="0 1 0" pos="0 0 0" armature="0.005"/>
+          <joint name="shoulder_pitch" type="hinge" axis="0 1 0" pos="0 0 0" armature="0.005" damping="2.0" frictionloss="0.2"/>
           <inertial pos="0.0 0 0.0" quat="1 0 0 0" mass="2.3" diaginertia="0.00176331 0.00174734 0.000400822"/>
           <geom type="mesh" contype="0"  conaffinity="0" density="0" mesh="shoulder_pitch" material="blue_material"/>
 
@@ -102,12 +102,12 @@
   </worldbody>
 <!-- Add actuators for the joints -->
   <actuator>
-    <motor joint="base_yaw" ctrllimited="true" ctrlrange="-20 20" gear="1"/>
-    <motor joint="shoulder_pitch" ctrllimited="true" ctrlrange="-25 25" gear="1"/>
-    <motor joint="shoulder_roll" ctrllimited="true" ctrlrange="-15 15" gear="1"/>
-    <motor joint="elbow" ctrllimited="true" ctrlrange="-20 20" gear="1"/>
-    <motor joint="wrist_pitch" ctrllimited="true" ctrlrange="-20 20" gear="1"/>
-    <motor joint="wrist_roll" ctrllimited="true" ctrlrange="-10 10" gear="1"/>
+    <motor joint="base_yaw" ctrllimited="true" ctrlrange="-20 20" gear="1" forcerange="-5 5"/>
+    <motor joint="shoulder_pitch" ctrllimited="true" ctrlrange="-25 25" gear="1" forcerange="-50 50"/>
+    <motor joint="shoulder_roll" ctrllimited="true" ctrlrange="-15 15" gear="1" forcerange="-10 10"/>
+    <motor joint="elbow" ctrllimited="true" ctrlrange="-20 20" gear="1" forcerange="-30 30"/>
+    <motor joint="wrist_pitch" ctrllimited="true" ctrlrange="-20 20" gear="1" forcerange="-10 10"/>
+    <motor joint="wrist_roll" ctrllimited="true" ctrlrange="-10 10" gear="1" forcerange="-5 5"/>
     <motor joint="box_mould_slide_x" ctrllimited="true" ctrlrange="-50 50" gear="1"/>
     <motor joint="box_mould_slide_y" ctrllimited="true" ctrlrange="-50 50" gear="1"/>
   </actuator>
