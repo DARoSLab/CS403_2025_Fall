@@ -1,2 +1,4 @@
 # [2025 Fall] COMPSCI 403. Introduction to Robotics
-This repository includes codes of homework, final project,and other useful for the course.   
+This repository includes code for CS 403 Final Project.
+
+To run, pip install mujoco then run the Run_RapidReachingEnv.py file.
