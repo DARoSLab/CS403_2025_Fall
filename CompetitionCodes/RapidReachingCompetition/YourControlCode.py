@@ -18,29 +18,40 @@ class YourCtrl:
 
   def getIK(self, goal, initq):
       
-    qi = initq.copy
+    qi = initq.copy()
     epsilon = 0.01
+    intr = 0
 
     dx = goal-self.d.xpos[self.ee_id].copy()
-    while np.linalg.norm(dx) > epsilon:
+    while np.linalg.norm(dx) > epsilon and intr<=100:
       jacp =  np.zeros((3,  self.m.nv)) 
       jcar = np.zeros((3,  self.m.nv))
-      mujoco.mj_jac(self.m, self.d, jacp, jcar, point=None, body=self.ee_id)
+      mujoco.mj_jac(self.m, self.d, jacp, jcar, self.d.xpos[self.ee_id], body=self.ee_id)
       J = jacp.copy()
+      
+      piJ = J.T @ np.linalg.inv(J@J.T+0.01**2*np.eye(3))@dx
 
-      qi = qi+0.1*np.linalg.pinv(J) @ dx
+      qi = qi+0.01*piJ
+
       self.d.qpos[:] = qi
       mujoco.mj_forward(self.m, self.d)
       
       dx = goal-self.d.xpos[self.ee_id].copy()
+      intr+=1
     return qi
+  
 
   def CtrlUpdate(self):
-      
+  
+    #temp
+    goal = self.target_points[:, 7]
+    q_d = self.getIK(goal, self.d.qpos)
 
+    M = np.zeros((6,6))
+    mujoco.mj_fullM(self.m, M, self.d.qM)  
     jtorque_cmd = np.zeros(6)
     for i in range(6):
-        jtorque_cmd[i] = 150.0*(self.init_qpos[i] - self.d.qpos[i])  - 5.2 *self.d.qvel[i]
+        jtorque_cmd[i] = self.kp*(q_d[i] - self.d.qpos[i])  - self.kd *self.d.qvel[i]
 
     return jtorque_cmd
 
