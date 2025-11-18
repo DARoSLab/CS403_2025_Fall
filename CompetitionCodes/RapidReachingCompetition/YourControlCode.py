@@ -32,9 +32,9 @@ class YourCtrl:
       J = jacp.copy()
       
       # piJ = J.T @ np.linalg.inv(J@J.T+0.01**2*np.eye(3))
-      piJ = np.linalg.pinv(J)
+      dq = np.linalg.pinv(J)@dx
 
-      dataT.qpos[:] = dataT.qpos[:]+0.01*piJ@dx
+      dataT.qpos[:] = dataT.qpos[:]+0.01*dq
 
       mujoco.mj_forward(self.m, dataT)
       
