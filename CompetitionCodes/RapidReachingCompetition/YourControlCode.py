@@ -31,9 +31,9 @@ class YourCtrl:
       mujoco.mj_jac(self.m, dataT, jacp, jcar, dataT.xpos[self.ee_id], self.ee_id)
       J = jacp.copy()
       
-      piJ = J.T @ np.linalg.inv(J@J.T+0.01**2*np.eye(3))@dx
+      piJ = J.T @ np.linalg.inv(J@J.T+0.01**2*np.eye(3))
 
-      dataT.qpos[:] = dataT.qpos[:]+0.01*piJ
+      dataT.qpos[:] = dataT.qpos[:]+0.01*piJ@dx
 
       mujoco.mj_forward(self.m, dataT)
       
