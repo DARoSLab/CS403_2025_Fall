@@ -18,33 +18,34 @@ class YourCtrl:
 
   def getIK(self, goal, initq):
       
-    qi = initq.copy()
-    epsilon = 0.01
+    dataT = mujoco.MjData(self.m)
     intr = 0
+    dataT.qpos[:] = initq.copy() 
+    mujoco.mj_forward(self.m, dataT)    
 
-    dx = goal-self.d.xpos[self.ee_id].copy()
-    while np.linalg.norm(dx) > epsilon and intr<=100:
-      jacp =  np.zeros((3,  self.m.nv)) 
-      jcar = np.zeros((3,  self.m.nv))
-      mujoco.mj_jac(self.m, self.d, jacp, jcar, self.d.xpos[self.ee_id], body=self.ee_id)
+    dx = goal-dataT.xpos[self.ee_id].copy()
+
+    while np.linalg.norm(dx) > 0.01 and intr<100:
+      jacp =  np.zeros((3, self.m.nv)) 
+      jcar = np.zeros((3, self.m.nv))
+      mujoco.mj_jac(self.m, dataT, jacp, jcar, dataT.xpos[self.ee_id], self.ee_id)
       J = jacp.copy()
       
       piJ = J.T @ np.linalg.inv(J@J.T+0.01**2*np.eye(3))@dx
 
-      qi = qi+0.01*piJ
+      dataT.qpos[:] = dataT.qpos[:]+0.01*piJ
 
-      self.d.qpos[:] = qi
-      mujoco.mj_forward(self.m, self.d)
+      mujoco.mj_forward(self.m, dataT)
       
-      dx = goal-self.d.xpos[self.ee_id].copy()
+      dx = goal-dataT.xpos[self.ee_id].copy()
       intr+=1
-    return qi
+    return dataT.qpos[:]
   
 
   def CtrlUpdate(self):
   
     #temp
-    goal = self.target_points[:, 7]
+    goal = self.target_points[:, 1]
     q_d = self.getIK(goal, self.d.qpos)
 
     M = np.zeros((6,6))
